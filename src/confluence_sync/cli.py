@@ -4,15 +4,25 @@ import re
 from pathlib import Path
 from rich.console import Console
 from rich.table import Table
+from pydantic import ValidationError
 from .config import Config
 from .confluence_client import ConfluenceClient
 from .sync import SyncManager
 
 console = Console()
 
+def _print_config_help() -> None:
+    console.print("Provide configuration via `confluence-sync.yml` or environment variables:")
+    console.print("  - CONFLUENCE_URL")
+    console.print("  - CONFLUENCE_API_TOKEN")
+    console.print("  - CONFLUENCE_SPACE_KEY")
+    console.print("  - CONFLUENCE_USERNAME (optional)")
+    console.print("  - LOCAL_PATH (optional)")
+    console.print("  - IGNORE_PATTERNS (optional; JSON array or comma-separated)")
+    console.print("Or run `confluence-sync init` to create a config file.")
 
 @click.group()
-@click.option('--config', '-c', type=click.Path(exists=True, path_type=Path), 
+@click.option('--config', '-c', type=click.Path(path_type=Path),
               help='Path to configuration file')
 @click.pass_context
 def cli(ctx, config):
@@ -227,9 +237,9 @@ def pull(ctx):
         config = Config(ctx.obj.get('config_path')).load()
         sync_manager = SyncManager(config)
         sync_manager.pull()
-    except FileNotFoundError as e:
-        console.print(f"[red]Error: {e}[/red]")
-        console.print("Run 'confluence-sync init' to create a configuration file.")
+    except (ValidationError, ValueError) as e:
+        console.print(f"[red]Configuration error: {e}[/red]")
+        _print_config_help()
     except Exception as e:
         console.print(f"[red]Error during pull: {e}[/red]")
 
@@ -245,9 +255,9 @@ def push(ctx, files):
         
         file_paths = list(files) if files else None
         sync_manager.push(file_paths)
-    except FileNotFoundError as e:
-        console.print(f"[red]Error: {e}[/red]")
-        console.print("Run 'confluence-sync init' to create a configuration file.")
+    except (ValidationError, ValueError) as e:
+        console.print(f"[red]Configuration error: {e}[/red]")
+        _print_config_help()
     except Exception as e:
         console.print(f"[red]Error during push: {e}[/red]")
 
@@ -260,9 +270,9 @@ def status(ctx):
         config = Config(ctx.obj.get('config_path')).load()
         sync_manager = SyncManager(config)
         sync_manager.status()
-    except FileNotFoundError as e:
-        console.print(f"[red]Error: {e}[/red]")
-        console.print("Run 'confluence-sync init' to create a configuration file.")
+    except (ValidationError, ValueError) as e:
+        console.print(f"[red]Configuration error: {e}[/red]")
+        _print_config_help()
     except Exception as e:
         console.print(f"[red]Error getting status: {e}[/red]")
 
