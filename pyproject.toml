@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "shouhanzen", email = "shouhanzen@gmail.com" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.9,<3.14"
 license = { text = "MIT" }
 keywords = ["confluence", "markdown", "sync", "documentation", "atlassian"]
 classifiers = [

@@ -51,6 +51,27 @@ ignore_patterns:
   - ".git/*"
 ```
 
+### Environment Variables
+
+Configuration can also be provided via environment variables. Environment variables override values in `confluence-sync.yml` when set.
+
+- `CONFLUENCE_URL` (required)
+- `CONFLUENCE_API_TOKEN` (required)
+- `CONFLUENCE_SPACE_KEY` (required)
+- `CONFLUENCE_USERNAME` (optional)
+- `LOCAL_PATH` (optional; defaults to `docs`)
+- `IGNORE_PATTERNS` (optional; JSON array or comma-separated list)
+
+Examples:
+
+```bash
+export CONFLUENCE_URL="https://your-domain.atlassian.net"
+export CONFLUENCE_API_TOKEN="..."
+export CONFLUENCE_SPACE_KEY="DOCS"
+export LOCAL_PATH="docs"
+export IGNORE_PATTERNS='["*.tmp",".git/*",".DS_Store"]'
+```
+
 ### Getting an API Token
 
 1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
